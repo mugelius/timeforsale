@@ -64,8 +64,31 @@ function drawHand(ctx, pos, length, width) {
 
 setInterval(drawClock, 1000);
 
-// Function to purchase a second
-const purchaseSecond = async (time, message) => {
+async function fetchPurchasedSeconds() {
+  try {
+    const response = await fetch("http://localhost:3000/purchasedSeconds");
+    if (!response.ok) throw new Error("Failed to fetch purchased seconds");
+
+    const purchasedSeconds = await response.json();
+    displayMessages(purchasedSeconds);
+  } catch (error) {
+    console.error("Error fetching purchased seconds:", error);
+  }
+}
+
+function displayMessages(secondsData) {
+  const messageArea = document.getElementById("messages");
+  messageArea.innerHTML = "";
+
+  for (const [time, { message }] of Object.entries(secondsData)) {
+    const div = document.createElement("div");
+    div.className = "message";
+    div.innerHTML = `<strong>${time}:</strong> ${message}`;
+    messageArea.appendChild(div);
+  }
+}
+
+async function purchaseSecond(time, message) {
   try {
     const response = await fetch("http://localhost:3000/purchaseSecond", {
       method: "POST",
@@ -77,53 +100,25 @@ const purchaseSecond = async (time, message) => {
 
     const data = await response.json();
 
-    if (response.ok) {
-      alert(`Second purchased successfully: ${time}`);
-      displayMessage(time, message);
-    } else {
-      alert(`Failed to purchase second: ${data.error}`);
-    }
-  } catch (err) {
-    console.error("Error purchasing second:", err);
-    alert("An error occurred while purchasing the second.");
+    if (!response.ok) throw new Error(data.error);
+
+    alert(`Successfully purchased second: ${time}`);
+    fetchPurchasedSeconds(); // Refresh displayed seconds
+  } catch (error) {
+    alert(error.message);
   }
-};
+}
 
-// Function to fetch purchased seconds and their messages
-const fetchPurchasedSeconds = async () => {
-  try {
-    const response = await fetch("http://localhost:3000/purchasedSeconds");
-    const data = await response.json();
-
-    for (const [time, info] of Object.entries(data)) {
-      displayMessage(time, info.message);
-    }
-  } catch (err) {
-    console.error("Error fetching purchased seconds:", err);
-  }
-};
-
-// Display a message for a purchased second
-const displayMessage = (time, message) => {
-  const messageArea = document.getElementById("messageArea");
-  const messageDiv = document.createElement("div");
-  messageDiv.className = "message";
-  messageDiv.innerHTML = `<strong>${time}</strong>: ${message}`;
-  messageArea.appendChild(messageDiv);
-};
-
-// Event listener for the "Buy Second" button
 document.getElementById("buySecondButton").addEventListener("click", () => {
   const time = document.getElementById("secondInput").value;
   const message = document.getElementById("secondMessage").value;
 
   if (!time || !message) {
-    alert("Please enter a valid time and message.");
+    alert("Please enter a time and a message.");
     return;
   }
 
   purchaseSecond(time, message);
 });
 
-// Fetch purchased seconds and messages on page load
 fetchPurchasedSeconds();

@@ -18,7 +18,6 @@ h1 {
 
 .clock-container {
   margin: 20px auto;
-  position: relative;
 }
 
 canvas {
@@ -54,6 +53,7 @@ button {
   color: #fff;
   cursor: pointer;
   border: none;
+  margin-top: 10px;
 }
 
 button:hover {
