@@ -6,65 +6,78 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
-  text-align: center;
+  background-color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .container {
-  width: 80%;
-  margin: 50px auto;
+  text-align: center;
+  width: 600px;
 }
 
 .clock-container {
   position: relative;
-  margin: 50px auto;
+  margin: 20px auto;
 }
 
-#clock {
+canvas {
+  background-color: white;
   border-radius: 50%;
-  background-color: #ffffff;
-  border: 5px solid #333;
+  border: 10px solid #333;
 }
 
 .purchase-container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  display: inline-block;
   margin-top: 30px;
 }
 
-.purchase-container input, .purchase-container textarea {
-  margin: 10px 0;
+button {
+  padding: 10px;
+  margin: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-#submitMessage {
+button:hover {
+  background-color: #45a049;
+}
+
+textarea {
+  width: 80%;
+  height: 100px;
   margin-top: 10px;
 }
 
-.message-area {
-  margin-top: 30px;
+#messageArea {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.second-box {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background-color: rgba(0, 255, 0, 0.5);
-  border: 2px solid #333;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 30px;
-  color: #fff;
-  font-size: 14px;
+.message-box {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #333;
+  margin: 5px;
+  position: relative;
 }
 
-.second-message {
+.message-box img,
+.message-box p {
   position: absolute;
-  color: #000;
-  font-size: 12px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.message-box p {
+  font-size: 12px;
+  color: #333;
 }
