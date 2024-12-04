@@ -1,89 +1,47 @@
-/* Basic reset for layout */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Body styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  color: #333;
-}
-
-/* Container styling */
-.container {
   text-align: center;
-  width: 80%;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
-/* Clock container */
+.container {
+  margin: 20px auto;
+  width: 70%;
+}
+
 .clock-container {
-  margin-bottom: 30px;
-  position: relative;
+  margin: 20px auto;
 }
 
-/* Canvas for the clock (circle) */
 canvas {
   border-radius: 50%;
   background-color: #fff;
-  border: 2px solid #333;
+  border: 5px solid #000;
 }
 
-/* Purchase containers for seconds and minute boxes */
-.purchase-container {
-  margin-top: 30px;
-}
-
-#minute-box-container {
-  display: grid;
-  grid-template-columns: repeat(60, 1fr); /* 60 columns for minute boxes */
-  gap: 5px;
-  justify-items: center;
+.purchase-form {
   margin-top: 20px;
 }
 
-.box {
-  width: 20px;
-  height: 20px;
-  background-color: lightgray;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.box:hover {
-  background-color: lightgreen;
-}
-
-#secondPrice {
-  font-weight: bold;
-}
-
-input[type="text"] {
-  padding: 8px;
-  width: 150px;
-  margin: 10px 0;
+input {
+  padding: 10px;
+  margin-right: 10px;
 }
 
 button {
   padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: #007BFF;
+  color: #fff;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #0056b3;
+}
+
+#message {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #ff0000;
 }
