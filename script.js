@@ -1,14 +1,22 @@
-// script.js
-const purchasedSeconds = {}; // Store purchased seconds locally (initial state)
+// Canvas and Context for Clock
+const canvas = document.getElementById("clockCanvas");
+const ctx = canvas.getContext("2d");
 
-// Fetch the purchased seconds from the server on page load
-fetch("/purchases")
-  .then((response) => response.json())
-  .then((data) => {
-    Object.assign(purchasedSeconds, data); // Populate the local store with server data
-    updateClockDisplay();
-  })
-  .catch((err) => console.error("Error fetching purchased seconds:", err));
+// Store Purchased Seconds
+let purchasedSeconds = {};
+
+// Function to fetch purchased seconds from the server
+function fetchPurchasedSeconds() {
+  fetch("/purchases")
+    .then((response) => response.json())
+    .then((data) => {
+      purchasedSeconds = data; // Update the purchasedSeconds object
+      updateClockDisplay(); // Update the clock display
+    })
+    .catch((error) => {
+      console.error("Error fetching purchased seconds:", error);
+    });
+}
 
 // Handle purchase of second
 document.getElementById("buySecondButton").addEventListener("click", () => {
@@ -52,13 +60,15 @@ document.getElementById("buySecondButton").addEventListener("click", () => {
     });
 });
 
-// Function to update the clock display
-function updateClockDisplay() {
-  // Update the display with the list of purchased seconds
-  const clockCanvas = document.getElementById("clockCanvas");
-  const ctx = clockCanvas.getContext("2d");
+// Function to draw clock hands
+function drawClock() {
+  const now = new Date();
+  const seconds = now.getSeconds();
+  const minutes = now.getMinutes();
+  const hours = now.getHours() % 12;
 
-  ctx.clearRect(0, 0, clockCanvas.width, clockCanvas.height);
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw clock face
   ctx.beginPath();
@@ -76,6 +86,11 @@ function updateClockDisplay() {
     ctx.fillText(i, x, y);
   }
 
+  // Draw clock hands
+  drawHand((hours + minutes / 60) * (Math.PI / 6), 100, 6); // Hour hand
+  drawHand((minutes + seconds / 60) * (Math.PI / 30), 140, 4); // Minute hand
+  drawHand(seconds * (Math.PI / 30), 170, 2, "#FF0000"); // Second hand
+
   // Draw purchased seconds
   Object.keys(purchasedSeconds).forEach((time) => {
     const [hour, minute, second] = time.split(":").map(Number);
@@ -87,6 +102,25 @@ function updateClockDisplay() {
   });
 }
 
+// Function to draw a clock hand
+function drawHand(angle, length, width, color = "#000") {
+  ctx.beginPath();
+  ctx.lineWidth = width;
+  ctx.lineCap = "round";
+  ctx.strokeStyle = color;
+  ctx.moveTo(200, 200);
+  ctx.lineTo(
+    200 + Math.cos(angle - Math.PI / 2) * length,
+    200 + Math.sin(angle - Math.PI / 2) * length
+  );
+  ctx.stroke();
+}
+
+// Function to update the clock display
+function updateClockDisplay() {
+  drawClock(); // Redraw the clock with updated data
+}
+
 // Initialize Clock
 function initClock() {
   setInterval(drawClock, 1000); // Update clock every second
@@ -94,3 +128,6 @@ function initClock() {
 
 // Start the Clock
 initClock();
+
+// Fetch purchased seconds on page load
+fetchPurchasedSeconds();
