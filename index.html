@@ -3,30 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Clock</title>
+  <title>Buy A Second</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Buy a Second on the Clock!</h1>
+    <h1>Buy A Second on the Clock!</h1>
+
+    <!-- Clock Canvas -->
     <div class="clock-container">
-      <canvas id="clock" width="500" height="500"></canvas>
+      <canvas id="clockCanvas" width="400" height="400"></canvas>
     </div>
 
-    <div class="purchase-container">
-      <h2>Buy a Specific Second</h2>
+    <!-- Purchase Form -->
+    <div class="purchase-form">
       <label for="secondInput">Enter Time (HH:MM:SS):</label>
       <input type="text" id="secondInput" placeholder="e.g., 12:00:01">
-
-      <label for="secondMessage">Your Message:</label>
-      <textarea id="secondMessage" placeholder="Enter your message here"></textarea>
-
-      <button id="buySecondButton">Buy Second ($1)</button>
+      <button id="buySecondButton">Buy Second for $1</button>
+      <p id="message"></p>
     </div>
 
-    <div id="messageArea" class="message-area">
-      <h2>Purchased Seconds</h2>
-      <div id="messages"></div>
+    <!-- Random Message Section -->
+    <div class="random-message">
+      <h2>Random Message for This Minute:</h2>
+      <p id="randomMessage">Loading...</p>
     </div>
   </div>
 

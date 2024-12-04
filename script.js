@@ -1,124 +1,105 @@
-const canvas = document.getElementById("clock");
+// Canvas and Context for Clock
+const canvas = document.getElementById("clockCanvas");
 const ctx = canvas.getContext("2d");
-const radius = canvas.height / 2;
-ctx.translate(radius, radius);
 
+// Store Purchased Seconds
+const purchasedSeconds = {};
+
+// Draw Clock
 function drawClock() {
-  ctx.clearRect(-radius, -radius, canvas.width, canvas.height);
-  drawFace(ctx, radius);
-  drawNumbers(ctx, radius);
-  drawTime(ctx, radius);
-}
-
-function drawFace(ctx, radius) {
-  ctx.beginPath();
-  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-  ctx.fillStyle = "#fff";
-  ctx.fill();
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 4;
-  ctx.stroke();
-}
-
-function drawNumbers(ctx, radius) {
-  ctx.font = `${radius * 0.15}px Arial`;
-  ctx.textBaseline = "middle";
-  ctx.textAlign = "center";
-  for (let num = 1; num <= 12; num++) {
-    const angle = (num * Math.PI) / 6;
-    const x = Math.cos(angle) * (radius * 0.85);
-    const y = Math.sin(angle) * (radius * 0.85);
-    ctx.fillText(num, x, y);
-  }
-}
-
-function drawTime(ctx, radius) {
   const now = new Date();
-  const hour = now.getHours() % 12;
-  const minute = now.getMinutes();
-  const second = now.getSeconds();
+  const seconds = now.getSeconds();
+  const minutes = now.getMinutes();
+  const hours = now.getHours() % 12;
 
-  // Hour hand
-  const hourAngle = ((hour + minute / 60) * Math.PI) / 6;
-  drawHand(ctx, hourAngle, radius * 0.5, radius * 0.07);
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Minute hand
-  const minuteAngle = ((minute + second / 60) * Math.PI) / 30;
-  drawHand(ctx, minuteAngle, radius * 0.75, radius * 0.05);
+  // Draw clock face
+  ctx.beginPath();
+  ctx.arc(200, 200, 190, 0, 2 * Math.PI);
+  ctx.stroke();
 
-  // Second hand
-  const secondAngle = (second * Math.PI) / 30;
-  drawHand(ctx, secondAngle, radius * 0.9, radius * 0.02);
+  // Draw clock numbers
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  for (let i = 1; i <= 12; i++) {
+    const angle = (i * Math.PI) / 6;
+    const x = 200 + Math.cos(angle - Math.PI / 2) * 160;
+    const y = 200 + Math.sin(angle - Math.PI / 2) * 160;
+    ctx.fillText(i, x, y);
+  }
+
+  // Draw clock hands
+  drawHand((hours + minutes / 60) * (Math.PI / 6), 100, 6); // Hour hand
+  drawHand((minutes + seconds / 60) * (Math.PI / 30), 140, 4); // Minute hand
+  drawHand(seconds * (Math.PI / 30), 170, 2, "#FF0000"); // Second hand
 }
 
-function drawHand(ctx, pos, length, width) {
+// Draw a Clock Hand
+function drawHand(angle, length, width, color = "#000") {
   ctx.beginPath();
   ctx.lineWidth = width;
   ctx.lineCap = "round";
-  ctx.moveTo(0, 0);
-  ctx.rotate(pos);
-  ctx.lineTo(0, -length);
+  ctx.strokeStyle = color;
+  ctx.moveTo(200, 200);
+  ctx.lineTo(
+    200 + Math.cos(angle - Math.PI / 2) * length,
+    200 + Math.sin(angle - Math.PI / 2) * length
+  );
   ctx.stroke();
-  ctx.rotate(-pos);
 }
 
-setInterval(drawClock, 1000);
-
-async function fetchPurchasedSeconds() {
-  try {
-    const response = await fetch("http://localhost:3000/purchasedSeconds");
-    if (!response.ok) throw new Error("Failed to fetch purchased seconds");
-
-    const purchasedSeconds = await response.json();
-    displayMessages(purchasedSeconds);
-  } catch (error) {
-    console.error("Error fetching purchased seconds:", error);
-  }
-}
-
-function displayMessages(secondsData) {
-  const messageArea = document.getElementById("messages");
-  messageArea.innerHTML = "";
-
-  for (const [time, { message }] of Object.entries(secondsData)) {
-    const div = document.createElement("div");
-    div.className = "message";
-    div.innerHTML = `<strong>${time}:</strong> ${message}`;
-    messageArea.appendChild(div);
-  }
-}
-
-async function purchaseSecond(time, message) {
-  try {
-    const response = await fetch("http://localhost:3000/purchaseSecond", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ time, message }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.error);
-
-    alert(`Successfully purchased second: ${time}`);
-    fetchPurchasedSeconds(); // Refresh displayed seconds
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
+// Handle Purchase
 document.getElementById("buySecondButton").addEventListener("click", () => {
-  const time = document.getElementById("secondInput").value;
-  const message = document.getElementById("secondMessage").value;
+  const input = document.getElementById("secondInput").value.trim();
+  const messageBox = document.getElementById("message");
 
-  if (!time || !message) {
-    alert("Please enter a time and a message.");
+  // Validate Input
+  const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+  if (!timeRegex.test(input)) {
+    messageBox.textContent = "Invalid time format! Use HH:MM:SS.";
     return;
   }
 
-  purchaseSecond(time, message);
+  // Check if the second is already purchased
+  if (purchasedSeconds[input]) {
+    messageBox.textContent = `This second is already purchased! Message: ${purchasedSeconds[input]}`;
+    return;
+  }
+
+  // Prompt for message
+  const userMessage = prompt("Enter your message for this second:");
+  if (!userMessage) {
+    messageBox.textContent = "Purchase canceled.";
+    return;
+  }
+
+  // Save purchase
+  purchasedSeconds[input] = userMessage;
+  messageBox.textContent = `You successfully purchased ${input}!`;
+
+  console.log(purchasedSeconds); // For debugging
 });
 
-fetchPurchasedSeconds();
+// Fetch random message for current minute
+function getRandomMessage() {
+  fetch('http://localhost:3000/randomMessage')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('randomMessage').textContent = data.message;
+    })
+    .catch(error => {
+      console.error('Error fetching random message:', error);
+    });
+}
+
+// Initialize Clock
+function initClock() {
+  setInterval(drawClock, 1000); // Update clock every second
+  setInterval(getRandomMessage, 60000); // Fetch random message every minute
+}
+
+// Start the Clock
+initClock();
