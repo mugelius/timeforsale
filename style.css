@@ -1,16 +1,30 @@
+/* General styles */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f4f8;
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin: 0;
 }
 
 .container {
   text-align: center;
-  width: 600px;
+  width: 90%;
+  max-width: 900px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-out;
+}
+
+h1 {
+  font-size: 36px;
+  color: #333;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
 }
 
 .clock-container {
@@ -20,34 +34,134 @@ body {
 
 canvas {
   border-radius: 50%;
-  border: 5px solid #333;
+  border: 6px solid #333;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .purchase-container {
+  background-color: #f9fafb;
+  padding: 25px;
+  border-radius: 10px;
   margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-button {
-  margin: 10px;
-  padding: 10px 20px;
+.purchase-container h2 {
+  font-size: 30px;
+  color: #2e3a59;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.purchase-container label {
+  font-size: 18px;
+  color: #333;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.purchase-container input,
+.purchase-container textarea,
+.purchase-container button {
   font-size: 16px;
+  padding: 12px;
+  margin-bottom: 15px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+}
+
+.purchase-container input,
+.purchase-container textarea {
+  background-color: #fff;
+}
+
+.purchase-container button {
   background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
 }
 
-button:hover {
+.purchase-container button:hover {
   background-color: #45a049;
+  transform: scale(1.05);
 }
 
-input {
-  padding: 10px;
-  font-size: 16px;
-  margin-top: 10px;
+.purchase-container button:active {
+  transform: scale(1);
 }
 
+.purchase-container input:focus,
+.purchase-container textarea:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+#paypal-button-container {
+  margin-top: 20px;
+}
+
+/* Message area styling */
 .message-area {
   margin-top: 20px;
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 8px;
+}
+
+.message-area p {
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+}
+
+/* Clock Animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media Queries for smaller screens */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  .purchase-container {
+    padding: 20px;
+  }
+
+  .purchase-container h2 {
+    font-size: 24px;
+  }
+
+  .purchase-container label {
+    font-size: 16px;
+  }
+
+  .purchase-container input,
+  .purchase-container textarea,
+  .purchase-container button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  canvas {
+    width: 100%;
+    height: auto;
+  }
 }

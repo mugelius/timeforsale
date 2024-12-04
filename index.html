@@ -5,29 +5,159 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buy A Second Clock</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Additional CSS to enhance the page's look */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      width: 80%;
+      max-width: 900px;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .clock-container {
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    canvas {
+      border-radius: 50%;
+      border: 5px solid #333;
+      background-color: #fff;
+    }
+
+    .purchase-container {
+      background-color: #f2f2f2;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .purchase-container h2 {
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+
+    .purchase-container label {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .purchase-container input, 
+    .purchase-container textarea, 
+    .purchase-container button {
+      font-size: 16px;
+      padding: 12px;
+      margin-bottom: 15px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .purchase-container button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .purchase-container button:hover {
+      background-color: #45a049;
+    }
+
+    .message-area {
+      margin-top: 20px;
+    }
+
+    .message-area p {
+      font-size: 16px;
+      color: #333;
+    }
+
+    #paypal-button-container {
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+
+      .purchase-container {
+        padding: 15px;
+      }
+
+      .purchase-container label {
+        font-size: 16px;
+      }
+
+      .purchase-container input, 
+      .purchase-container textarea, 
+      .purchase-container button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
+
   <div class="container">
     <h1>Buy A Second on the Clock!</h1>
 
+    <!-- Clock Container -->
     <div class="clock-container">
       <canvas id="clock" width="500" height="500"></canvas>
     </div>
 
+    <!-- Purchase Section -->
     <div class="purchase-container">
-      <h2>Purchase Options:</h2>
-      <label for="timeInput">Enter time to purchase (format HH:MM:SS): </label>
-      <input type="text" id="timeInput" placeholder="12:00:01">
-      <button id="buySecondButton">Buy Second</button>
+      <h2>Purchase a Second or Minute:</h2>
 
-      <h3>Buy a Minute (60$)</h3>
+      <!-- Input for specific time to buy a second -->
+      <label for="timeInput">Enter time to purchase (HH:MM:SS):</label>
+      <input type="text" id="timeInput" placeholder="12:00:01" required pattern="^([0-9]{1,2}):([0-9]{2}):([0-9]{2})$">
+      <button id="buySecondButton">Buy Second ($1)</button>
+
+      <h3>Buy a Minute ($50)</h3>
       <button id="buyMinuteButton">Buy Minute</button>
+
+      <h3>Your Message</h3>
+      <textarea id="message" placeholder="Enter your message" required></textarea>
+      <input type="file" id="image" accept="image/*">
     </div>
 
+    <!-- Message Area -->
     <div id="messageArea" class="message-area"></div>
+
+    <!-- PayPal Button Container -->
+    <div id="paypal-button-container"></div>
   </div>
 
-  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&components=buttons"></script>
+  <!-- PayPal SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AUcgwMzT0I1cyTNz12Dorr99yON8fDBT9vo_FyO1thGG-_kmLHT6Uassh3EJASbqgMKTVgAv9YwWGate&components=buttons"></script>
+
+  <!-- Custom Script -->
   <script src="script.js"></script>
+
 </body>
 </html>
