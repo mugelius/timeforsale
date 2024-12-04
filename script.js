@@ -1,62 +1,21 @@
-// Canvas and Context for Clock
-const canvas = document.getElementById("clockCanvas");
-const ctx = canvas.getContext("2d");
+// script.js
+const purchasedSeconds = {}; // Store purchased seconds locally (initial state)
 
-// Store Purchased Seconds
-const purchasedSeconds = {};
+// Fetch the purchased seconds from the server on page load
+fetch("/purchases")
+  .then((response) => response.json())
+  .then((data) => {
+    Object.assign(purchasedSeconds, data); // Populate the local store with server data
+    updateClockDisplay();
+  })
+  .catch((err) => console.error("Error fetching purchased seconds:", err));
 
-// Draw Clock
-function drawClock() {
-  const now = new Date();
-  const seconds = now.getSeconds();
-  const minutes = now.getMinutes();
-  const hours = now.getHours() % 12;
-
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw clock face
-  ctx.beginPath();
-  ctx.arc(200, 200, 190, 0, 2 * Math.PI);
-  ctx.stroke();
-
-  // Draw clock numbers
-  ctx.font = "20px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  for (let i = 1; i <= 12; i++) {
-    const angle = (i * Math.PI) / 6;
-    const x = 200 + Math.cos(angle - Math.PI / 2) * 160;
-    const y = 200 + Math.sin(angle - Math.PI / 2) * 160;
-    ctx.fillText(i, x, y);
-  }
-
-  // Draw clock hands
-  drawHand((hours + minutes / 60) * (Math.PI / 6), 100, 6); // Hour hand
-  drawHand((minutes + seconds / 60) * (Math.PI / 30), 140, 4); // Minute hand
-  drawHand(seconds * (Math.PI / 30), 170, 2, "#FF0000"); // Second hand
-}
-
-// Draw a Clock Hand
-function drawHand(angle, length, width, color = "#000") {
-  ctx.beginPath();
-  ctx.lineWidth = width;
-  ctx.lineCap = "round";
-  ctx.strokeStyle = color;
-  ctx.moveTo(200, 200);
-  ctx.lineTo(
-    200 + Math.cos(angle - Math.PI / 2) * length,
-    200 + Math.sin(angle - Math.PI / 2) * length
-  );
-  ctx.stroke();
-}
-
-// Handle Purchase
+// Handle purchase of second
 document.getElementById("buySecondButton").addEventListener("click", () => {
   const input = document.getElementById("secondInput").value.trim();
   const messageBox = document.getElementById("message");
 
-  // Validate Input
+  // Validate input
   const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
   if (!timeRegex.test(input)) {
     messageBox.textContent = "Invalid time format! Use HH:MM:SS.";
@@ -76,29 +35,61 @@ document.getElementById("buySecondButton").addEventListener("click", () => {
     return;
   }
 
-  // Save purchase
-  purchasedSeconds[input] = userMessage;
-  messageBox.textContent = `You successfully purchased ${input}!`;
-
-  console.log(purchasedSeconds); // For debugging
+  // Send purchase request to the server
+  fetch("http://localhost:3000/purchaseSecond", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ time: input, message: userMessage }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      messageBox.textContent = data.message;
+      purchasedSeconds[input] = userMessage; // Update the local store
+      updateClockDisplay(); // Update the clock display
+    })
+    .catch((error) => {
+      messageBox.textContent = error.message;
+    });
 });
 
-// Fetch random message for current minute
-function getRandomMessage() {
-  fetch('http://localhost:3000/randomMessage')
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('randomMessage').textContent = data.message;
-    })
-    .catch(error => {
-      console.error('Error fetching random message:', error);
-    });
+// Function to update the clock display
+function updateClockDisplay() {
+  // Update the display with the list of purchased seconds
+  const clockCanvas = document.getElementById("clockCanvas");
+  const ctx = clockCanvas.getContext("2d");
+
+  ctx.clearRect(0, 0, clockCanvas.width, clockCanvas.height);
+
+  // Draw clock face
+  ctx.beginPath();
+  ctx.arc(200, 200, 190, 0, 2 * Math.PI);
+  ctx.stroke();
+
+  // Draw clock numbers
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  for (let i = 1; i <= 12; i++) {
+    const angle = (i * Math.PI) / 6;
+    const x = 200 + Math.cos(angle - Math.PI / 2) * 160;
+    const y = 200 + Math.sin(angle - Math.PI / 2) * 160;
+    ctx.fillText(i, x, y);
+  }
+
+  // Draw purchased seconds
+  Object.keys(purchasedSeconds).forEach((time) => {
+    const [hour, minute, second] = time.split(":").map(Number);
+    const angle = ((second / 60) * 2 * Math.PI) - Math.PI / 2;
+    ctx.beginPath();
+    ctx.arc(200 + Math.cos(angle) * 150, 200 + Math.sin(angle) * 150, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "red";
+    ctx.fill();
+  });
 }
 
 // Initialize Clock
 function initClock() {
   setInterval(drawClock, 1000); // Update clock every second
-  setInterval(getRandomMessage, 60000); // Fetch random message every minute
 }
 
 // Start the Clock
