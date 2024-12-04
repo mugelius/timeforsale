@@ -1,211 +1,89 @@
-/* Global Reset */
+/* Basic reset for layout */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
 }
 
-/* Body and Layout */
+/* Body styling */
 body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f4f4f4;
+  height: 100vh;
+  margin: 0;
+  color: #333;
 }
 
-/* Container for the entire page */
+/* Container styling */
 .container {
   text-align: center;
-  width: 100%;
-  max-width: 900px;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Heading Styles */
-h1 {
-  font-size: 36px;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-h2, h3 {
-  font-size: 20px;
-  color: #333;
-  margin: 15px 0;
-}
-
-/* Clock Container */
-.clock-container {
-  position: relative;
-  width: 500px;
-  height: 500px;
+  width: 80%;
+  max-width: 600px;
   margin: 0 auto;
-  background-color: #ffffff;
+}
+
+/* Clock container */
+.clock-container {
+  margin-bottom: 30px;
+  position: relative;
+}
+
+/* Canvas for the clock (circle) */
+canvas {
   border-radius: 50%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border: 2px solid #333;
 }
 
-/* Clock Hands */
-.clock-hand {
-  position: absolute;
-  width: 50%;
-  height: 2px;
-  background-color: #333;
-  transform-origin: 100%;
-  transition: transform 0.5s ease-in-out;
-}
-
-/* The Hour Hand (shortest) */
-.hour-hand {
-  height: 4px;
-  background-color: #000;
-}
-
-/* The Minute Hand (medium) */
-.minute-hand {
-  height: 3px;
-  background-color: #555;
-}
-
-/* The Second Hand (longest) */
-.second-hand {
-  height: 2px;
-  background-color: red;
-}
-
-/* Center of the clock */
-.clock-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  background-color: #333;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Purchase Container */
+/* Purchase containers for seconds and minute boxes */
 .purchase-container {
   margin-top: 30px;
 }
 
-/* Input and Textarea */
-input[type="text"],
-textarea {
-  width: 300px;
-  padding: 10px;
-  margin-top: 10px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-}
-
-input[type="text"]:focus,
-textarea:focus {
-  border-color: #0056b3;
-  outline: none;
-}
-
-/* Button Styles */
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  color: #fff;
-  background-color: #0056b3;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 15px;
-}
-
-button:hover {
-  background-color: #004099;
-}
-
-/* Message Area */
-.message-area {
+#minute-box-container {
+  display: grid;
+  grid-template-columns: repeat(60, 1fr); /* 60 columns for minute boxes */
+  gap: 5px;
+  justify-items: center;
   margin-top: 20px;
-  padding: 20px;
-  background-color: #f7f7f7;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  display: none; /* Initially hidden */
-}
-
-.message-area p {
-  margin: 10px 0;
-  font-size: 16px;
-}
-
-/* PayPal Button Container */
-#paypal-button-container {
-  margin-top: 30px;
-}
-
-/* Box for clickable seconds/minutes */
-.boxes-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
 }
 
 .box {
-  width: 10px;
-  height: 10px;
-  margin: 1px;
-  background-color: rgba(0, 0, 0, 0.1);
+  width: 20px;
+  height: 20px;
+  background-color: lightgray;
+  border-radius: 3px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s ease;
 }
 
 .box:hover {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: lightgreen;
 }
 
-.box.selected {
-  background-color: rgba(0, 150, 0, 0.7);
+#secondPrice {
+  font-weight: bold;
 }
 
-.box.disabled {
-  background-color: rgba(0, 0, 0, 0.3);
-  cursor: not-allowed;
+input[type="text"] {
+  padding: 8px;
+  width: 150px;
+  margin: 10px 0;
 }
 
-/* Box grid layout - every minute box and second box */
-.boxes-container .minute-box {
-  width: 10px;
-  height: 10px;
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
-.boxes-container .second-box {
-  width: 5px;
-  height: 5px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-
-  .clock-container {
-    width: 400px;
-    height: 400px;
-  }
-
-  .purchase-container input,
-  .purchase-container textarea {
-    width: 250px;
-  }
+button:hover {
+  background-color: #45a049;
 }

@@ -3,48 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buy A Second Clock</title>
+  <title>Buy a Second Clock</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <div class="container">
     <h1>Buy A Second on the Clock!</h1>
-    
-    <!-- Clock Container -->
+
+    <!-- Clock Display -->
     <div class="clock-container">
-      <canvas id="clock"></canvas>
+      <canvas id="clock" width="500" height="500"></canvas>
     </div>
-    
-    <!-- Purchase Container -->
+
+    <!-- Purchase a Second -->
     <div class="purchase-container">
-      <h2>Select Seconds to Buy:</h2>
-      
-      <!-- Input for entering specific time -->
-      <label for="secondInput">Enter Time to Buy (e.g. 11:59:59):</label>
-      <input type="text" id="secondInput" placeholder="HH:MM:SS">
-      
-      <!-- Buy Button -->
-      <button id="buyButton">Buy Now</button>
-      
-      <h3>Your Message (for seconds only)</h3>
-      <textarea id="message" placeholder="Enter text for your second"></textarea>
-      <input type="file" id="image" accept="image/*">
-      <button id="submitMessage">Submit Message</button>
+      <h2>Buy A Second!</h2>
+      <label for="time-input">Enter Time (HH:MM:SS):</label>
+      <input type="text" id="time-input" placeholder="e.g. 12:00:01">
+      <button id="buySecondButton">Buy Second</button>
+      <p id="secondPrice">Price: $1 per second</p>
     </div>
-    
-    <!-- Message Area -->
-    <div id="messageArea" class="message-area"></div>
-    
-    <!-- PayPal Button Container -->
+
+    <!-- Purchase Minute Box -->
+    <h3>Purchase Minute Box (Cost: $50)</h3>
+    <div id="minute-box-container"></div>
+
+    <!-- PayPal Button Placeholder (for future integration) -->
     <div id="paypal-button-container"></div>
   </div>
 
-  <!-- PayPal SDK Script -->
-  <script src="https://www.paypal.com/sdk/js?client-id=AUcgwMzT0I1cyTNz12Dorr99yON8fDBT9vo_FyO1thGG-_kmLHT6Uassh3EJASbqgMKTVgAv9YwWGate&components=buttons"></script>
-  
-  <!-- Main Script -->
   <script src="script.js"></script>
-
 </body>
 </html>
