@@ -1,47 +1,76 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #f9f9f9;
   text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
-  margin: 20px auto;
-  width: 70%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
 }
 
 .clock-container {
   margin: 20px auto;
+  position: relative;
 }
 
 canvas {
+  border: 2px solid #000;
   border-radius: 50%;
-  background-color: #fff;
-  border: 5px solid #000;
 }
 
-.purchase-form {
-  margin-top: 20px;
+.purchase-container {
+  margin: 20px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-input {
+label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+input, textarea, button {
+  width: calc(100% - 20px);
+  margin: 0 auto;
   padding: 10px;
-  margin-right: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 button {
-  padding: 10px 20px;
   background-color: #007BFF;
   color: #fff;
-  border: none;
   cursor: pointer;
+  border: none;
 }
 
 button:hover {
   background-color: #0056b3;
 }
 
-#message {
-  margin-top: 15px;
-  font-weight: bold;
-  color: #ff0000;
+.message-area {
+  margin-top: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
 }

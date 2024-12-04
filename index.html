@@ -3,24 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buy A Second</title>
+  <title>Buy A Second Clock</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>Buy A Second on the Clock!</h1>
-
-    <!-- Clock Canvas -->
     <div class="clock-container">
-      <canvas id="clockCanvas" width="400" height="400"></canvas>
+      <canvas id="clock" width="500" height="500"></canvas>
     </div>
 
-    <!-- Purchase Form -->
-    <div class="purchase-form">
+    <div class="purchase-container">
+      <h2>Buy a Specific Second</h2>
       <label for="secondInput">Enter Time (HH:MM:SS):</label>
       <input type="text" id="secondInput" placeholder="e.g., 12:00:01">
-      <button id="buySecondButton">Buy Second for $1</button>
-      <p id="message"></p>
+
+      <label for="secondMessage">Your Message:</label>
+      <textarea id="secondMessage" placeholder="Enter your message here"></textarea>
+
+      <button id="buySecondButton">Buy Second ($1)</button>
+    </div>
+
+    <div id="messageArea" class="message-area">
+      <h2>Purchased Seconds</h2>
     </div>
   </div>
 
