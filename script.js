@@ -3,76 +3,22 @@ const canvas = document.getElementById("clockCanvas");
 const ctx = canvas.getContext("2d");
 
 // Store Purchased Seconds
-let purchasedSeconds = {};
+const purchasedSeconds = {};
 
-// Fetch the purchased seconds from the backend
+// Fetch Purchased Seconds from Backend
 function fetchPurchasedSeconds() {
-  fetch("http://localhost:3000/purchases")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch purchased seconds');
-      }
-      return response.json();
-    })
+  fetch("http://localhost:3000/purchasedSeconds")
+    .then((response) => response.json())
     .then((data) => {
-      purchasedSeconds = data; // Update the local purchased seconds
-      updateClockDisplay(); // Update the clock display
+      Object.assign(purchasedSeconds, data); // Merge purchased seconds data into our state
+      drawClock(); // Redraw clock with updated data
     })
     .catch((error) => {
       console.error("Error fetching purchased seconds:", error);
     });
 }
 
-// Handle purchase of second
-document.getElementById("buySecondButton").addEventListener("click", () => {
-  const input = document.getElementById("secondInput").value.trim();
-  const messageBox = document.getElementById("message");
-
-  // Validate input
-  const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
-  if (!timeRegex.test(input)) {
-    messageBox.textContent = "Invalid time format! Use HH:MM:SS.";
-    return;
-  }
-
-  // Check if the second is already purchased
-  if (purchasedSeconds[input]) {
-    messageBox.textContent = `This second is already purchased! Message: ${purchasedSeconds[input]}`;
-    return;
-  }
-
-  // Prompt for message
-  const userMessage = prompt("Enter your message for this second:");
-  if (!userMessage) {
-    messageBox.textContent = "Purchase canceled.";
-    return;
-  }
-
-  // Send purchase request to the server
-  fetch("http://localhost:3000/purchaseSecond", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ time: input, message: userMessage }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw new Error(errorData.message || 'Failed to purchase second');
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      messageBox.textContent = data.message;
-      purchasedSeconds[input] = userMessage; // Update local store with the new purchase
-      updateClockDisplay(); // Update the clock display to show the new purchase
-    })
-    .catch((error) => {
-      messageBox.textContent = error.message;
-    });
-});
-
-// Function to draw the clock
+// Draw Clock
 function drawClock() {
   const now = new Date();
   const seconds = now.getSeconds();
@@ -103,18 +49,16 @@ function drawClock() {
   drawHand((minutes + seconds / 60) * (Math.PI / 30), 140, 4); // Minute hand
   drawHand(seconds * (Math.PI / 30), 170, 2, "#FF0000"); // Second hand
 
-  // Draw purchased seconds as red dots
+  // Highlight purchased seconds
   Object.keys(purchasedSeconds).forEach((time) => {
-    const [hour, minute, second] = time.split(":").map(Number);
-    const angle = ((second / 60) * 2 * Math.PI) - Math.PI / 2;
-    ctx.beginPath();
-    ctx.arc(200 + Math.cos(angle) * 150, 200 + Math.sin(angle) * 150, 5, 0, 2 * Math.PI);
-    ctx.fillStyle = "red";
-    ctx.fill();
+    const [h, m, s] = time.split(":").map(Number);
+    if (h === hours && m === minutes && s === seconds) {
+      ctx.fillText(purchasedSeconds[time], 200, 200);
+    }
   });
 }
 
-// Function to draw a clock hand
+// Draw a Clock Hand
 function drawHand(angle, length, width, color = "#000") {
   ctx.beginPath();
   ctx.lineWidth = width;
@@ -128,18 +72,53 @@ function drawHand(angle, length, width, color = "#000") {
   ctx.stroke();
 }
 
-// Function to update the clock display
-function updateClockDisplay() {
-  drawClock(); // Redraw the clock with updated purchases
-}
+// Handle Purchase
+document.getElementById("buySecondButton").addEventListener("click", () => {
+  const input = document.getElementById("secondInput").value.trim();
+  const messageBox = document.getElementById("message");
+
+  // Validate Input
+  const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+  if (!timeRegex.test(input)) {
+    messageBox.textContent = "Invalid time format! Use HH:MM:SS.";
+    return;
+  }
+
+  // Check if the second is already purchased
+  if (purchasedSeconds[input]) {
+    messageBox.textContent = `This second is already purchased! Message: ${purchasedSeconds[input]}`;
+    return;
+  }
+
+  // Prompt for message
+  const userMessage = prompt("Enter your message for this second:");
+  if (!userMessage) {
+    messageBox.textContent = "Purchase canceled.";
+    return;
+  }
+
+  // Send data to server
+  fetch("http://localhost:3000/purchaseSecond", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ time: input, message: userMessage }),
+  })
+    .then((response) => response.text())
+    .then((successMessage) => {
+      messageBox.textContent = successMessage;
+      purchasedSeconds[input] = userMessage; // Update local data
+      drawClock(); // Redraw the clock
+    })
+    .catch((error) => {
+      messageBox.textContent = error.message;
+    });
+});
 
 // Initialize Clock
 function initClock() {
   setInterval(drawClock, 1000); // Update clock every second
+  fetchPurchasedSeconds(); // Fetch purchased seconds on start
 }
 
 // Start the Clock
 initClock();
-
-// Fetch purchased seconds on page load
-fetchPurchasedSeconds();
