@@ -1,167 +1,211 @@
-/* General styles */
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f0f4f8;
+/* Global Reset */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* Body and Layout */
+body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  background-color: #f4f4f4;
 }
 
+/* Container for the entire page */
 .container {
   text-align: center;
-  width: 90%;
+  width: 100%;
   max-width: 900px;
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 1s ease-out;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Heading Styles */
 h1 {
   font-size: 36px;
   color: #333;
   margin-bottom: 20px;
-  letter-spacing: 2px;
 }
 
+h2, h3 {
+  font-size: 20px;
+  color: #333;
+  margin: 15px 0;
+}
+
+/* Clock Container */
 .clock-container {
   position: relative;
-  margin-bottom: 30px;
-}
-
-canvas {
+  width: 500px;
+  height: 500px;
+  margin: 0 auto;
+  background-color: #ffffff;
   border-radius: 50%;
-  border: 6px solid #333;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Clock Hands */
+.clock-hand {
+  position: absolute;
+  width: 50%;
+  height: 2px;
+  background-color: #333;
+  transform-origin: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+/* The Hour Hand (shortest) */
+.hour-hand {
+  height: 4px;
+  background-color: #000;
+}
+
+/* The Minute Hand (medium) */
+.minute-hand {
+  height: 3px;
+  background-color: #555;
+}
+
+/* The Second Hand (longest) */
+.second-hand {
+  height: 2px;
+  background-color: red;
+}
+
+/* Center of the clock */
+.clock-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background-color: #333;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Purchase Container */
 .purchase-container {
-  background-color: #f9fafb;
-  padding: 25px;
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
 }
 
-.purchase-container h2 {
-  font-size: 30px;
-  color: #2e3a59;
-  margin-bottom: 15px;
-  text-transform: uppercase;
-}
-
-.purchase-container label {
-  font-size: 18px;
-  color: #333;
-  display: block;
-  margin-bottom: 8px;
-}
-
-.purchase-container input,
-.purchase-container textarea,
-.purchase-container button {
-  font-size: 16px;
-  padding: 12px;
-  margin-bottom: 15px;
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  transition: all 0.3s ease;
-}
-
-.purchase-container input,
-.purchase-container textarea {
-  background-color: #fff;
-}
-
-.purchase-container button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.purchase-container button:hover {
-  background-color: #45a049;
-  transform: scale(1.05);
-}
-
-.purchase-container button:active {
-  transform: scale(1);
-}
-
-.purchase-container input:focus,
-.purchase-container textarea:focus {
-  outline: none;
-  border-color: #4CAF50;
-}
-
+/* Input and Textarea */
+input[type="text"],
 textarea {
-  resize: vertical;
-  min-height: 100px;
+  width: 300px;
+  padding: 10px;
+  margin-top: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
 }
 
-#paypal-button-container {
-  margin-top: 20px;
+input[type="text"]:focus,
+textarea:focus {
+  border-color: #0056b3;
+  outline: none;
 }
 
-/* Message area styling */
+/* Button Styles */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #0056b3;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+button:hover {
+  background-color: #004099;
+}
+
+/* Message Area */
 .message-area {
   margin-top: 20px;
-  padding: 10px;
-  background-color: #e9ecef;
-  border-radius: 8px;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  display: none; /* Initially hidden */
 }
 
 .message-area p {
+  margin: 10px 0;
   font-size: 16px;
-  color: #333;
-  margin: 0;
 }
 
-/* Clock Animation */
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* PayPal Button Container */
+#paypal-button-container {
+  margin-top: 30px;
 }
 
-/* Media Queries for smaller screens */
-@media (max-width: 600px) {
+/* Box for clickable seconds/minutes */
+.boxes-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.box {
+  width: 10px;
+  height: 10px;
+  margin: 1px;
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.box:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.box.selected {
+  background-color: rgba(0, 150, 0, 0.7);
+}
+
+.box.disabled {
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: not-allowed;
+}
+
+/* Box grid layout - every minute box and second box */
+.boxes-container .minute-box {
+  width: 10px;
+  height: 10px;
+}
+
+.boxes-container .second-box {
+  width: 5px;
+  height: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .container {
-    padding: 20px;
-  }
-
-  .purchase-container {
-    padding: 20px;
-  }
-
-  .purchase-container h2 {
-    font-size: 24px;
-  }
-
-  .purchase-container label {
-    font-size: 16px;
-  }
-
-  .purchase-container input,
-  .purchase-container textarea,
-  .purchase-container button {
-    font-size: 14px;
     padding: 10px;
   }
 
-  canvas {
-    width: 100%;
-    height: auto;
+  .clock-container {
+    width: 400px;
+    height: 400px;
+  }
+
+  .purchase-container input,
+  .purchase-container textarea {
+    width: 250px;
   }
 }

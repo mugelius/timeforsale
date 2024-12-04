@@ -1,145 +1,14 @@
-// Constants for the clock hands and their time intervals
-const SECOND_HAND = document.querySelector('.second-hand');
-const MINUTE_HAND = document.querySelector('.minute-hand');
-const HOUR_HAND = document.querySelector('.hour-hand');
-const canvas = document.getElementById('clock');
-const ctx = canvas.getContext('2d');
-
-// For creating the clock boxes
-const totalBoxes = 720; // 720 boxes = 12 hours x 60 minutes x 60 seconds
-let boxes = [];
-
-canvas.width = 500;
-canvas.height = 500;
-
-// Draw Clock with numbers 1-12 at correct positions and lines for each second
-function drawClock() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  
-  // Draw the clock face
-  ctx.beginPath();
-  ctx.arc(0, 0, 230, 0, 2 * Math.PI); // Outer circle
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = '#333';
-  ctx.stroke();
-  
-  // Draw numbers 1-12
-  ctx.font = '24px Arial';
-  ctx.fillStyle = '#333';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  for (let i = 1; i <= 12; i++) {
-    const angle = (i * Math.PI) / 6;
-    const x = Math.cos(angle) * 190;
-    const y = Math.sin(angle) * 190;
-    ctx.fillText(i, x, y);
-  }
-
-  // Draw 720 boxes for seconds
-  const totalSeconds = 60;
-  const secondsPerBox = totalBoxes / totalSeconds;
-  for (let i = 0; i < totalBoxes; i++) {
-    const angle = (i / totalBoxes) * 2 * Math.PI;
-    const x1 = Math.cos(angle) * 200;
-    const y1 = Math.sin(angle) * 200;
-    const x2 = Math.cos(angle) * 210;
-    const y2 = Math.sin(angle) * 210;
-    
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.stroke();
-    
-    // Add each box as an object for interactivity
-    boxes.push({x1, y1, x2, y2, selected: false, index: i});
-  }
-  ctx.resetTransform();
-}
-
-// Function to draw the clock hands (second, minute, hour)
-function drawHands() {
-  const now = new Date();
-  
-  const second = now.getSeconds() + now.getMilliseconds() / 1000;
-  const minute = now.getMinutes() + second / 60;
-  const hour = now.getHours() + minute / 60;
-
-  // Second hand: 360 degrees / 60 seconds = 6 degrees per second
-  const secondAngle = (second / 60) * 2 * Math.PI;
-  SECOND_HAND.style.transform = `rotate(${secondAngle}rad)`;
-  
-  // Minute hand: 360 degrees / 60 minutes = 6 degrees per minute
-  const minuteAngle = (minute / 60) * 2 * Math.PI;
-  MINUTE_HAND.style.transform = `rotate(${minuteAngle}rad)`;
-  
-  // Hour hand: 360 degrees / 12 hours = 30 degrees per hour
-  const hourAngle = (hour / 12) * 2 * Math.PI;
-  HOUR_HAND.style.transform = `rotate(${hourAngle}rad)`;
-  
-  // Redraw the clock face and boxes every second
-  drawClock();
-  requestAnimationFrame(drawHands);
-}
-
-// Start drawing the clock hands and the clock face
-requestAnimationFrame(drawHands);
-
-// Logic for buying a second or minute
-function handleBuy() {
-  const selectedBoxes = boxes.filter(box => box.selected);
-  
-  if (selectedBoxes.length > 0) {
-    alert("You selected " + selectedBoxes.length + " seconds! Preparing for payment.");
-    // Trigger PayPal payment logic for multiple seconds
-  } else {
-    const selectedSecond = document.getElementById('secondInput').value;
-    alert("You selected second: " + selectedSecond + " to purchase.");
-    // Trigger PayPal payment for the specific second input
-  }
-}
-
-// Event listeners for the minute/second selection boxes
-canvas.addEventListener('click', function(event) {
-  const clickX = event.offsetX;
-  const clickY = event.offsetY;
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const dx = clickX - centerX;
-  const dy = clickY - centerY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  if (distance > 180 && distance < 210) { // Click inside the boxes' range
-    const angle = Math.atan2(dy, dx);
-    const boxIndex = Math.floor((angle + Math.PI) / (2 * Math.PI) * totalBoxes);
-    
-    const clickedBox = boxes[boxIndex];
-    clickedBox.selected = !clickedBox.selected;
-    
-    // Toggle the box color for feedback
-    if (clickedBox.selected) {
-      ctx.fillStyle = 'rgba(0, 255, 0, 0.6)';
-    } else {
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.6)';
-    }
-    
-    ctx.fillRect(clickedBox.x1, clickedBox.y1, clickedBox.x2 - clickedBox.x1, clickedBox.y2 - clickedBox.y1);
-  }
-});
-
-// Button logic to handle user purchasing
-document.getElementById('buyButton').addEventListener('click', handleBuy);
-
-// PayPal Button integration (requires you to set up a PayPal button with your ID)
+// PayPal button setup
 paypal.Buttons({
   createOrder: function(data, actions) {
     return actions.order.create({
       purchase_units: [{
         amount: {
-          value: '1.00' // Change dynamically based on second or minute purchased
+          value: function() {
+            // Retrieve the total value based on selected boxes or seconds
+            let totalAmount = calculateTotalAmount();
+            return totalAmount.toString();
+          }
         }
       }]
     });
@@ -147,6 +16,105 @@ paypal.Buttons({
   onApprove: function(data, actions) {
     return actions.order.capture().then(function(details) {
       alert('Transaction completed by ' + details.payer.name.given_name);
+      // Reset selections and clear messages after purchase
+      resetSelections();
     });
   }
 }).render('#paypal-button-container');
+
+// Global variable to track selected time boxes and input
+let selectedBoxes = [];
+let selectedTime = "";
+
+// Get current time for clock hands animation
+function setClockHands() {
+  const date = new Date();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  const hourAngle = (hours % 12) * 30 + minutes * 0.5; // Each hour is 30 degrees, and minute affects hour hand
+  const minuteAngle = minutes * 6; // Each minute is 6 degrees
+  const secondAngle = seconds * 6; // Each second is 6 degrees
+
+  // Set rotation for hands
+  document.querySelector('.hour-hand').style.transform = `rotate(${hourAngle}deg)`;
+  document.querySelector('.minute-hand').style.transform = `rotate(${minuteAngle}deg)`;
+  document.querySelector('.second-hand').style.transform = `rotate(${secondAngle}deg)`;
+
+  // Update clock every second
+  setTimeout(setClockHands, 1000);
+}
+
+// Create the clickable boxes for minutes and seconds
+function createTimeBoxes() {
+  const boxContainer = document.querySelector('.boxes-container');
+
+  // Loop through for 720 boxes (12 hours * 60 minutes * 60 seconds)
+  for (let i = 0; i < 720; i++) {
+    let box = document.createElement('div');
+    box.classList.add('box', 'minute-box'); // Start with minute boxes
+    box.setAttribute('data-index', i);
+    box.addEventListener('click', () => selectBox(i)); // Add event listener for clicks
+
+    boxContainer.appendChild(box);
+  }
+}
+
+// Select a box when clicked
+function selectBox(index) {
+  if (selectedBoxes.includes(index)) {
+    selectedBoxes = selectedBoxes.filter(boxIndex => boxIndex !== index);
+    document.querySelector(`[data-index="${index}"]`).classList.remove('selected');
+  } else {
+    selectedBoxes.push(index);
+    document.querySelector(`[data-index="${index}"]`).classList.add('selected');
+  }
+}
+
+// Function to calculate the total amount to be paid based on selections
+function calculateTotalAmount() {
+  let totalAmount = 0;
+
+  // Each selected minute costs 50 dollars
+  totalAmount += selectedBoxes.length * 50;
+
+  // Handle seconds selection (if any)
+  if (selectedTime !== "") {
+    totalAmount += 1; // Each second costs 1 dollar
+  }
+
+  return totalAmount;
+}
+
+// Function to handle input time for seconds purchase
+function handleSecondPurchase() {
+  const timeInput = document.getElementById('time-input').value;
+  
+  // Validate the format (e.g., "12:34:56")
+  const timePattern = /^([0-9]{1,2}):([0-9]{2}):([0-9]{2})$/;
+  if (timePattern.test(timeInput)) {
+    selectedTime = timeInput;
+    alert(`You selected the second at ${selectedTime}`);
+  } else {
+    alert("Invalid time format. Please enter in HH:MM:SS format.");
+  }
+}
+
+// Reset selected boxes after a successful purchase
+function resetSelections() {
+  selectedBoxes = [];
+  selectedTime = "";
+  document.querySelectorAll('.box').forEach(box => box.classList.remove('selected'));
+  document.getElementById('message').value = '';
+  document.getElementById('time-input').value = '';
+}
+
+// Start the clock animation
+setClockHands();
+
+// Initialize the time boxes for selection
+createTimeBoxes();
+
+// Handle the second purchase logic when "Buy Second" button is clicked
+document.getElementById('buySecondButton').addEventListener('click', handleSecondPurchase);
