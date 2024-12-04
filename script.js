@@ -1,122 +1,92 @@
+// Initialize clock parameters and canvas context
 const canvas = document.getElementById("clock");
 const ctx = canvas.getContext("2d");
-const centerX = canvas.width / 2;
-const centerY = canvas.height / 2;
-const radius = 200;
-let selectedSeconds = [];
+const radius = canvas.width / 2;
+const secondHand = { length: radius - 10, color: "#ff0000", width: 2 };
+const minuteHand = { length: radius - 20, color: "#0000ff", width: 4 };
+const hourHand = { length: radius - 40, color: "#00ff00", width: 6 };
 
-// Function to draw clock face (with numbers)
-function drawClockFace() {
+// Function to draw the clock face
+function drawClock() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.translate(radius, radius); // Move origin to the center of the canvas
+
+  // Draw the clock circle
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = "#fff";
+  ctx.fill();
+  ctx.lineWidth = 8;
   ctx.strokeStyle = "#333";
-  ctx.lineWidth = 10;
   ctx.stroke();
 
-  // Draw hour, minute, and second divisions (boxes)
-  for (let i = 0; i < 60; i++) {
-    const angle = (i * Math.PI * 2) / 60;
-    const x1 = centerX + Math.cos(angle) * radius;
-    const y1 = centerY + Math.sin(angle) * radius;
-    const x2 = centerX + Math.cos(angle) * (radius - 15);
-    const y2 = centerY + Math.sin(angle) * (radius - 15);
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 1;
-    ctx.stroke();
+  // Draw clock numbers (1-12)
+  ctx.font = "16px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  for (let i = 0; i < 12; i++) {
+    const angle = (i * 30) * Math.PI / 180; // Angles for numbers
+    const x = (radius - 30) * Math.cos(angle);
+    const y = (radius - 30) * Math.sin(angle);
+    ctx.fillText(i + 1, x, y);
   }
 
-  // Draw the numbers 1-12 for hours (12 at top)
-  for (let i = 1; i <= 12; i++) {
-    const angle = (i * Math.PI * 2) / 12;
-    const x = centerX + Math.cos(angle - Math.PI / 2) * (radius - 30); // Adjust 12 at top
-    const y = centerY + Math.sin(angle - Math.PI / 2) * (radius - 30);
-    ctx.fillStyle = "#000";
-    ctx.font = "20px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(i, x, y);
-  }
-}
-
-// Function to draw clock hands
-function drawClockHands() {
+  // Draw clock hands
   const now = new Date();
-  const hours = now.getHours() % 12;
-  const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
+  const second = now.getSeconds();
+  const minute = now.getMinutes();
+  const hour = now.getHours();
 
-  // Draw the second hand (longest)
-  const secondAngle = (seconds * Math.PI * 2) / 60;
-  ctx.strokeStyle = "#ff0000";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(centerX, centerY);
-  ctx.lineTo(centerX + Math.cos(secondAngle) * (radius - 20), centerY + Math.sin(secondAngle) * (radius - 20));
-  ctx.stroke();
+  // Draw second hand
+  drawHand(second * 6, secondHand);
 
-  // Draw the minute hand (middle-sized)
-  const minuteAngle = (minutes * Math.PI * 2) / 60;
-  ctx.strokeStyle = "#00ff00";
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(centerX, centerY);
-  ctx.lineTo(centerX + Math.cos(minuteAngle) * (radius - 40), centerY + Math.sin(minuteAngle) * (radius - 40));
-  ctx.stroke();
+  // Draw minute hand
+  drawHand(minute * 6 + second / 10, minuteHand);
 
-  // Draw the hour hand (shortest)
-  const hourAngle = (hours * Math.PI * 2) / 12;
-  ctx.strokeStyle = "#0000ff";
-  ctx.lineWidth = 6;
-  ctx.beginPath();
-  ctx.moveTo(centerX, centerY);
-  ctx.lineTo(centerX + Math.cos(hourAngle) * (radius - 60), centerY + Math.sin(hourAngle) * (radius - 60));
-  ctx.stroke();
+  // Draw hour hand
+  drawHand((hour % 12) * 30 + minute / 2, hourHand);
+
+  ctx.translate(-radius, -radius); // Reset origin
 }
 
-// Draw the second markers (boxes) that users can select
-function drawSecondMarkers() {
-  const boxSize = 15;
-  for (let i = 0; i < 60; i++) {
-    const angle = (i * Math.PI * 2) / 60;
-    const x = centerX + Math.cos(angle) * (radius - 60);
-    const y = centerY + Math.sin(angle) * (radius - 60);
+// Function to draw a hand
+function drawHand(angle, hand) {
+  ctx.save();
+  ctx.rotate(angle * Math.PI / 180); // Rotate hand by given angle
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(0, -hand.length);
+  ctx.strokeStyle = hand.color;
+  ctx.lineWidth = hand.width;
+  ctx.stroke();
+  ctx.restore();
+}
 
-    ctx.strokeStyle = "#000";
-    ctx.strokeRect(x - boxSize / 2, y - boxSize / 2, boxSize, boxSize);
+// Update clock every second
+setInterval(drawClock, 1000);
 
-    // Highlight selected seconds
-    if (selectedSeconds.includes(i + 1)) {
-      ctx.fillStyle = "#FF0000";
-      ctx.fillRect(x - boxSize / 2, y - boxSize / 2, boxSize, boxSize);
-    }
+// Function to calculate the total seconds between two times and display the price
+document.getElementById("buyButton").addEventListener("click", function () {
+  const startTime = document.getElementById("startTime").value.split(":");
+  const endTime = document.getElementById("endTime").value.split(":");
+
+  const startHour = parseInt(startTime[0]);
+  const startMinute = parseInt(startTime[1]);
+  const endHour = parseInt(endTime[0]);
+  const endMinute = parseInt(endTime[1]);
+
+  // Calculate the difference in time
+  const startInSeconds = startHour * 3600 + startMinute * 60;
+  const endInSeconds = endHour * 3600 + endMinute * 60;
+
+  let totalSeconds = endInSeconds - startInSeconds;
+  if (totalSeconds < 0) {
+    totalSeconds += 12 * 3600; // Wrap around to the next day
   }
 
-  // Add click event to handle second selection
-  canvas.addEventListener('click', function(event) {
-    const dist = Math.sqrt(Math.pow(event.offsetX - centerX, 2) + Math.pow(event.offsetY - centerY, 2));
-    if (dist < radius - 60) {
-      const angle = Math.atan2(event.offsetY - centerY, event.offsetX - centerX);
-      const second = Math.floor((angle + Math.PI) / (Math.PI * 2) * 60) + 1;
-      if (!selectedSeconds.includes(second)) {
-        selectedSeconds.push(second);
-      }
-      drawClockFace();
-      drawClockHands();
-      drawSecondMarkers();
-    }
-  });
-}
+  const totalCost = totalSeconds; // 1 second = $1 for simplicity
 
-// Update the clock every second
-function updateClock() {
-  drawClockFace();
-  drawClockHands();
-  drawSecondMarkers();
-}
+  document.getElementById("selectedTime").innerText = `Selected Time: ${startHour}:${startMinute} - ${endHour}:${endMinute}\nTotal seconds: ${totalSeconds} = $${totalCost}`;
 
-setInterval(updateClock, 1000);
-updateClock(); // Initial drawing
+  // Implement PayPal button here (based on totalCost)
+});
