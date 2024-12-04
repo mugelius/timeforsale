@@ -4,7 +4,6 @@ const centerX = canvas.width / 2;
 const centerY = canvas.height / 2;
 const radius = 200;
 let selectedSeconds = [];
-let messages = [];
 
 // Draw the clock face, numbers, and divisions
 function drawClockFace() {
@@ -33,8 +32,8 @@ function drawClockFace() {
   // Draw the numbers 1-12 for hours
   for (let i = 1; i <= 12; i++) {
     const angle = (i * Math.PI * 2) / 12;
-    const x = centerX + Math.cos(angle) * (radius - 30);
-    const y = centerY + Math.sin(angle) * (radius - 30);
+    const x = centerX + Math.cos(angle - Math.PI / 2) * (radius - 30); // Adjust 12 at top
+    const y = centerY + Math.sin(angle - Math.PI / 2) * (radius - 30);
     ctx.fillStyle = "#000";
     ctx.font = "20px Arial";
     ctx.textAlign = "center";
@@ -100,26 +99,4 @@ function drawSecondMarkers() {
   canvas.addEventListener('click', function(event) {
     const dist = Math.sqrt(Math.pow(event.offsetX - centerX, 2) + Math.pow(event.offsetY - centerY, 2));
     if (dist < radius - 60) {
-      const angle = Math.atan2(event.offsetY - centerY, event.offsetX - centerX);
-      let selected = Math.floor((angle + Math.PI) / (Math.PI / 30)) + 1;
-      selected = selected > 60 ? 1 : selected;
-
-      // Select nearest second range if more than one is selected
-      const range = document.getElementById('seconds').value;
-      const nearestSeconds = [];
-      for (let i = selected - range / 2; i < selected + range / 2; i++) {
-        nearestSeconds.push((i + 60) % 60);
-      }
-
-      selectedSeconds = nearestSeconds;
-      drawClockFace();
-      drawClockHands();
-      drawSecondMarkers();
-    }
-  });
-}
-
-// Initial draw
-drawClockFace();
-drawClockHands();
-drawSecondMarkers();
+      const angle = Math.atan2(event.offsetY - centerY, event.offset
