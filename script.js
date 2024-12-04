@@ -5,7 +5,7 @@ const centerY = canvas.height / 2;
 const radius = 200;
 let selectedSeconds = [];
 
-// Draw the clock face, numbers, and divisions
+// Function to draw clock face (with numbers)
 function drawClockFace() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.beginPath();
@@ -29,7 +29,7 @@ function drawClockFace() {
     ctx.stroke();
   }
 
-  // Draw the numbers 1-12 for hours
+  // Draw the numbers 1-12 for hours (12 at top)
   for (let i = 1; i <= 12; i++) {
     const angle = (i * Math.PI * 2) / 12;
     const x = centerX + Math.cos(angle - Math.PI / 2) * (radius - 30); // Adjust 12 at top
@@ -42,14 +42,14 @@ function drawClockFace() {
   }
 }
 
-// Draw the clock hands (hour, minute, second)
+// Function to draw clock hands
 function drawClockHands() {
   const now = new Date();
   const hours = now.getHours() % 12;
   const minutes = now.getMinutes();
   const seconds = now.getSeconds();
 
-  // Draw the second hand (shortest)
+  // Draw the second hand (longest)
   const secondAngle = (seconds * Math.PI * 2) / 60;
   ctx.strokeStyle = "#ff0000";
   ctx.lineWidth = 2;
@@ -67,7 +67,7 @@ function drawClockHands() {
   ctx.lineTo(centerX + Math.cos(minuteAngle) * (radius - 40), centerY + Math.sin(minuteAngle) * (radius - 40));
   ctx.stroke();
 
-  // Draw the hour hand (longest)
+  // Draw the hour hand (shortest)
   const hourAngle = (hours * Math.PI * 2) / 12;
   ctx.strokeStyle = "#0000ff";
   ctx.lineWidth = 6;
@@ -99,4 +99,24 @@ function drawSecondMarkers() {
   canvas.addEventListener('click', function(event) {
     const dist = Math.sqrt(Math.pow(event.offsetX - centerX, 2) + Math.pow(event.offsetY - centerY, 2));
     if (dist < radius - 60) {
-      const angle = Math.atan2(event.offsetY - centerY, event.offset
+      const angle = Math.atan2(event.offsetY - centerY, event.offsetX - centerX);
+      const second = Math.floor((angle + Math.PI) / (Math.PI * 2) * 60) + 1;
+      if (!selectedSeconds.includes(second)) {
+        selectedSeconds.push(second);
+      }
+      drawClockFace();
+      drawClockHands();
+      drawSecondMarkers();
+    }
+  });
+}
+
+// Update the clock every second
+function updateClock() {
+  drawClockFace();
+  drawClockHands();
+  drawSecondMarkers();
+}
+
+setInterval(updateClock, 1000);
+updateClock(); // Initial drawing
