@@ -5,12 +5,17 @@ const ctx = canvas.getContext("2d");
 // Store Purchased Seconds
 let purchasedSeconds = {};
 
-// Function to fetch purchased seconds from the server
+// Fetch the purchased seconds from the backend
 function fetchPurchasedSeconds() {
-  fetch("/purchases")
-    .then((response) => response.json())
+  fetch("http://localhost:3000/purchases")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch purchased seconds');
+      }
+      return response.json();
+    })
     .then((data) => {
-      purchasedSeconds = data; // Update the purchasedSeconds object
+      purchasedSeconds = data; // Update the local purchased seconds
       updateClockDisplay(); // Update the clock display
     })
     .catch((error) => {
@@ -49,18 +54,25 @@ document.getElementById("buySecondButton").addEventListener("click", () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ time: input, message: userMessage }),
   })
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((errorData) => {
+          throw new Error(errorData.message || 'Failed to purchase second');
+        });
+      }
+      return response.json();
+    })
     .then((data) => {
       messageBox.textContent = data.message;
-      purchasedSeconds[input] = userMessage; // Update the local store
-      updateClockDisplay(); // Update the clock display
+      purchasedSeconds[input] = userMessage; // Update local store with the new purchase
+      updateClockDisplay(); // Update the clock display to show the new purchase
     })
     .catch((error) => {
       messageBox.textContent = error.message;
     });
 });
 
-// Function to draw clock hands
+// Function to draw the clock
 function drawClock() {
   const now = new Date();
   const seconds = now.getSeconds();
@@ -91,7 +103,7 @@ function drawClock() {
   drawHand((minutes + seconds / 60) * (Math.PI / 30), 140, 4); // Minute hand
   drawHand(seconds * (Math.PI / 30), 170, 2, "#FF0000"); // Second hand
 
-  // Draw purchased seconds
+  // Draw purchased seconds as red dots
   Object.keys(purchasedSeconds).forEach((time) => {
     const [hour, minute, second] = time.split(":").map(Number);
     const angle = ((second / 60) * 2 * Math.PI) - Math.PI / 2;
@@ -118,7 +130,7 @@ function drawHand(angle, length, width, color = "#000") {
 
 // Function to update the clock display
 function updateClockDisplay() {
-  drawClock(); // Redraw the clock with updated data
+  drawClock(); // Redraw the clock with updated purchases
 }
 
 // Initialize Clock
