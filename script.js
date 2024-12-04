@@ -5,82 +5,111 @@
 \paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\f0\fs24 \cf0 // Clock Setup\
-const canvas = document.getElementById('clock');\
-const ctx = canvas.getContext('2d');\
-const radius = canvas.width / 2;\
+\f0\fs24 \cf0 const clockCanvas = document.getElementById('clock');\
+const ctx = clockCanvas.getContext('2d');\
+const buyButton = document.getElementById('buyButton');\
+const messageInput = document.getElementById('message');\
+const imageInput = document.getElementById('image');\
+const submitMessageButton = document.getElementById('submitMessage');\
+const messageArea = document.getElementById('messageArea');\
 \
-ctx.translate(radius, radius); // Move origin to the center of the clock\
-\
+// Draw clock\
 function drawClock() \{\
-  ctx.clearRect(-radius, -radius, canvas.width, canvas.height); // Clear canvas\
-\
   const now = new Date();\
   const seconds = now.getSeconds();\
   const minutes = now.getMinutes();\
   const hours = now.getHours();\
 \
-  // Draw the clock face\
+  // Clear canvas\
+  ctx.clearRect(0, 0, clockCanvas.width, clockCanvas.height);\
+\
+  // Draw clock face\
   ctx.beginPath();\
-  ctx.arc(0, 0, radius - 10, 0, 2 * Math.PI);\
+  ctx.arc(250, 250, 200, 0, 2 * Math.PI);\
+  ctx.strokeStyle = '#333';\
+  ctx.lineWidth = 10;\
   ctx.stroke();\
 \
-  // Draw the second hand\
-  const secondAngle = (seconds * Math.PI) / 30;\
+  // Draw second hand\
+  const secondAngle = (seconds / 60) * 2 * Math.PI;\
+  ctx.save();\
+  ctx.translate(250, 250);\
+  ctx.rotate(secondAngle);\
   ctx.beginPath();\
   ctx.moveTo(0, 0);\
-  ctx.lineTo(Math.sin(secondAngle) * radius, -Math.cos(secondAngle) * radius);\
-  ctx.strokeStyle = '#f00';\
+  ctx.lineTo(0, -180);\
+  ctx.strokeStyle = '#ff0000';\
   ctx.lineWidth = 2;\
   ctx.stroke();\
+  ctx.restore();\
 \
-  // Draw the minute hand\
-  const minuteAngle = (minutes * Math.PI) / 30;\
+  // Draw minute hand\
+  const minuteAngle = (minutes / 60) * 2 * Math.PI;\
+  ctx.save();\
+  ctx.translate(250, 250);\
+  ctx.rotate(minuteAngle);\
   ctx.beginPath();\
   ctx.moveTo(0, 0);\
-  ctx.lineTo(Math.sin(minuteAngle) * (radius - 20), -Math.cos(minuteAngle) * (radius - 20));\
+  ctx.lineTo(0, -150);\
   ctx.strokeStyle = '#000';\
   ctx.lineWidth = 4;\
   ctx.stroke();\
+  ctx.restore();\
 \
-  // Draw the hour hand\
-  const hourAngle = (hours % 12 + minutes / 60) * Math.PI / 6;\
+  // Draw hour hand\
+  const hourAngle = ((hours % 12) / 12) * 2 * Math.PI;\
+  ctx.save();\
+  ctx.translate(250, 250);\
+  ctx.rotate(hourAngle);\
   ctx.beginPath();\
   ctx.moveTo(0, 0);\
-  ctx.lineTo(Math.sin(hourAngle) * (radius - 50), -Math.cos(hourAngle) * (radius - 50));\
+  ctx.lineTo(0, -100);\
   ctx.strokeStyle = '#000';\
   ctx.lineWidth = 6;\
   ctx.stroke();\
-\
-  requestAnimationFrame(drawClock);\
+  ctx.restore();\
 \}\
 \
-drawClock();\
+setInterval(drawClock, 1000);\
 \
-// Buy button functionality\
-document.getElementById('buyButton').addEventListener('click', function() \{\
-  const seconds = document.getElementById('seconds').value;\
-  const message = document.getElementById('message').value;\
-  const image = document.getElementById('image').files[0];\
+// Add message to clock\
+submitMessageButton.addEventListener('click', () => \{\
+  const message = messageInput.value;\
+  const imageFile = imageInput.files[0];\
 \
-  let messageContent = `<p>Second bought: $\{seconds\} sec</p>`;\
-  if (message) messageContent += `<p>$\{message\}</p>`;\
-  if (image) messageContent += `<img src="$\{URL.createObjectURL(image)\}" alt="image">`;\
+  if (message || imageFile) \{\
+    const messageDiv = document.createElement('div');\
+    messageDiv.classList.add('message');\
 \
-  const messageBox = document.createElement('div');\
-  messageBox.classList.add('message-box');\
-  messageBox.innerHTML = messageContent;\
+    if (message) \{\
+      const textElement = document.createElement('p');\
+      textElement.innerText = message;\
+      messageDiv.appendChild(textElement);\
+    \}\
 \
-  document.getElementById('messageArea').appendChild(messageBox);\
+    if (imageFile) \{\
+      const imageElement = document.createElement('img');\
+      const reader = new FileReader();\
+      reader.onload = () => \{\
+        imageElement.src = reader.result;\
+        messageDiv.appendChild(imageElement);\
+      \};\
+      reader.readAsDataURL(imageFile);\
+    \}\
+\
+    messageArea.appendChild(messageDiv);\
+    messageInput.value = '';\
+    imageInput.value = '';\
+  \}\
 \});\
 \
-// PayPal Button integration\
+// PayPal button setup (client ID)\
 paypal.Buttons(\{\
   createOrder: function(data, actions) \{\
     return actions.order.create(\{\
       purchase_units: [\{\
         amount: \{\
-          value: '1.00' // Price per second\
+          value: 1 // Set price per second here (change for bulk purchases)\
         \}\
       \}]\
     \});\
@@ -90,5 +119,5 @@ paypal.Buttons(\{\
       alert('Transaction completed by ' + details.payer.name.given_name);\
     \});\
   \}\
-\}).render('#paypal-button-container\'92);\
+\}).render('#paypal-button-container');\
 }
