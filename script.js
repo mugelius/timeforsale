@@ -4,6 +4,7 @@ const centerX = canvas.width / 2;
 const centerY = canvas.height / 2;
 const radius = 200;
 let selectedSecond = null;
+let messages = [];
 
 // Draw the clock face, numbers, and divisions
 function drawClockFace() {
@@ -77,7 +78,7 @@ function drawClockHands() {
   ctx.stroke();
 }
 
-// Draw the second numbers (boxes) that users can select
+// Draw the second markers (boxes) that users can select
 function drawSecondMarkers() {
   for (let i = 0; i < 60; i++) {
     const angle = (i * Math.PI * 2) / 60;
