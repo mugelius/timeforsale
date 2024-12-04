@@ -3,7 +3,7 @@ const ctx = canvas.getContext("2d");
 const centerX = canvas.width / 2;
 const centerY = canvas.height / 2;
 const radius = 200;
-let selectedSecond = null;
+let selectedSeconds = [];
 let messages = [];
 
 // Draw the clock face, numbers, and divisions
@@ -50,7 +50,7 @@ function drawClockHands() {
   const minutes = now.getMinutes();
   const seconds = now.getSeconds();
 
-  // Draw the second hand
+  // Draw the second hand (shortest)
   const secondAngle = (seconds * Math.PI * 2) / 60;
   ctx.strokeStyle = "#ff0000";
   ctx.lineWidth = 2;
@@ -59,7 +59,7 @@ function drawClockHands() {
   ctx.lineTo(centerX + Math.cos(secondAngle) * (radius - 20), centerY + Math.sin(secondAngle) * (radius - 20));
   ctx.stroke();
 
-  // Draw the minute hand
+  // Draw the minute hand (middle-sized)
   const minuteAngle = (minutes * Math.PI * 2) / 60;
   ctx.strokeStyle = "#00ff00";
   ctx.lineWidth = 4;
@@ -68,7 +68,7 @@ function drawClockHands() {
   ctx.lineTo(centerX + Math.cos(minuteAngle) * (radius - 40), centerY + Math.sin(minuteAngle) * (radius - 40));
   ctx.stroke();
 
-  // Draw the hour hand
+  // Draw the hour hand (longest)
   const hourAngle = (hours * Math.PI * 2) / 12;
   ctx.strokeStyle = "#0000ff";
   ctx.lineWidth = 6;
@@ -80,34 +80,46 @@ function drawClockHands() {
 
 // Draw the second markers (boxes) that users can select
 function drawSecondMarkers() {
+  const boxSize = 15;
   for (let i = 0; i < 60; i++) {
     const angle = (i * Math.PI * 2) / 60;
     const x = centerX + Math.cos(angle) * (radius - 60);
     const y = centerY + Math.sin(angle) * (radius - 60);
-    const boxSize = 20;
 
     ctx.strokeStyle = "#000";
     ctx.strokeRect(x - boxSize / 2, y - boxSize / 2, boxSize, boxSize);
 
-    // Add click event to handle second selection
-    canvas.addEventListener('click', function(event) {
-      const dist = Math.sqrt(Math.pow(event.offsetX - x, 2) + Math.pow(event.offsetY - y, 2));
-      if (dist < boxSize) {
-        selectedSecond = i + 1;
-        alert("You selected second " + selectedSecond);
-      }
-    });
+    // Highlight selected seconds
+    if (selectedSeconds.includes(i + 1)) {
+      ctx.fillStyle = "#FF0000";
+      ctx.fillRect(x - boxSize / 2, y - boxSize / 2, boxSize, boxSize);
+    }
   }
+
+  // Add click event to handle second selection
+  canvas.addEventListener('click', function(event) {
+    const dist = Math.sqrt(Math.pow(event.offsetX - centerX, 2) + Math.pow(event.offsetY - centerY, 2));
+    if (dist < radius - 60) {
+      const angle = Math.atan2(event.offsetY - centerY, event.offsetX - centerX);
+      let selected = Math.floor((angle + Math.PI) / (Math.PI / 30)) + 1;
+      selected = selected > 60 ? 1 : selected;
+
+      // Select nearest second range if more than one is selected
+      const range = document.getElementById('seconds').value;
+      const nearestSeconds = [];
+      for (let i = selected - range / 2; i < selected + range / 2; i++) {
+        nearestSeconds.push((i + 60) % 60);
+      }
+
+      selectedSeconds = nearestSeconds;
+      drawClockFace();
+      drawClockHands();
+      drawSecondMarkers();
+    }
+  });
 }
 
-// Start drawing the clock
-function startClock() {
-  setInterval(function() {
-    drawClockFace();
-    drawClockHands();
-    drawSecondMarkers();
-  }, 1000);
-}
-
-// Initialize clock and start the process
-startClock();
+// Initial draw
+drawClockFace();
+drawClockHands();
+drawSecondMarkers();
