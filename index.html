@@ -3,37 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Buy A Second on the Clock</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Main container for the entire page -->
   <div class="container">
-    <h1>Buy A Second on the Clock!</h1>
-    <div class="clock-container">
+    <!-- Heading section -->
+    <header>
+      <h1>Buy A Second on the Clock!</h1>
+    </header>
+
+    <!-- Clock section -->
+    <section class="clock-container">
       <canvas id="clock" width="500" height="500"></canvas>
-    </div>
-    
-    <div class="purchase-container">
+    </section>
+
+    <!-- Purchase section where user can select time -->
+    <section class="purchase-container">
       <h2>Purchase Seconds</h2>
-      <label for="startTime">Start Time (HH:MM):</label>
-      <input type="time" id="startTime">
-      <label for="endTime">End Time (HH:MM):</label>
-      <input type="time" id="endTime">
-      
-      <div>
-        <button id="buyButton">Buy Now</button>
+      <p>Select a time range to buy seconds on the clock:</p>
+
+      <!-- Input for start time -->
+      <div class="time-input">
+        <label for="startTime">Start Time (HH:MM):</label>
+        <input type="time" id="startTime" required>
       </div>
-      
+
+      <!-- Input for end time -->
+      <div class="time-input">
+        <label for="endTime">End Time (HH:MM):</label>
+        <input type="time" id="endTime" required>
+      </div>
+
+      <!-- Button to trigger purchase -->
+      <button id="buyButton">Buy Now</button>
+
+      <!-- Display selected time -->
       <div id="selectedTime"></div>
-    </div>
-    
-    <div id="messageArea" class="message-area"></div>
-    
-    <!-- PayPal Button -->
-    <div id="paypal-button-container"></div>
+    </section>
+
+    <!-- Section to show the message area for ads or messages -->
+    <section class="message-area">
+      <h3>Your Messages</h3>
+      <div id="messageArea"></div>
+    </section>
+
+    <!-- PayPal button container -->
+    <section id="paypal-button-container"></section>
   </div>
 
+  <!-- PayPal SDK script -->
   <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&components=buttons"></script>
+
+  <!-- Link to your main JavaScript file -->
   <script src="script.js"></script>
 </body>
 </html>

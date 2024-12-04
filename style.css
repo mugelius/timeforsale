@@ -1,155 +1,153 @@
-/* Basic Reset */
+/* Reset some default styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* General Body styles */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+  background-color: #f4f4f9;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   flex-direction: column;
-  margin: 0;
-}
-
-.container {
   text-align: center;
-  position: relative;
-  margin-bottom: 30px;
 }
 
-/* The Canvas that displays the clock */
-.clock-container {
-  position: relative;
-  display: inline-block;
-  margin-top: 50px;
-}
-
-canvas {
-  border-radius: 50%;
-  border: 8px solid #333;
+/* Container for the clock and UI */
+.container {
   background-color: #fff;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
-
-.clock-container::after {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  background-color: #333;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Purchase Section */
-.purchase-container {
-  background-color: #fff;
-  padding: 20px;
   border-radius: 10px;
-  width: 320px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  margin-top: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 600px;
+  max-width: 100%;
+  margin-top: 20px;
+  padding-bottom: 50px;
+}
+
+/* Title styling */
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Styling for the clock container */
+.clock-container {
+  margin-bottom: 30px;
   position: relative;
+}
+
+/* Styling for the clock canvas */
+#clock {
+  border-radius: 50%;
+  border: 10px solid #333;
+  background-color: #fff;
+  margin: 0 auto;
+  display: block;
+  position: relative;
+}
+
+/* Styling for the purchase section */
+.purchase-container {
+  margin-top: 20px;
 }
 
 .purchase-container h2 {
-  margin-bottom: 15px;
-  font-size: 24px;
+  font-size: 1.5em;
+  margin-bottom: 10px;
   color: #333;
 }
 
 .purchase-container label {
-  font-size: 16px;
-  margin-right: 10px;
-  color: #555;
+  display: block;
+  font-size: 1em;
+  color: #666;
+  margin: 10px 0 5px;
 }
 
-.purchase-container input[type="time"] {
+.purchase-container input[type="number"] {
+  width: 100px;
   padding: 10px;
-  margin-bottom: 15px;
-  width: 120px;
-  font-size: 16px;
-  border: 2px solid #ddd;
+  font-size: 1em;
+  border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-button {
+.purchase-container button {
+  padding: 10px 20px;
+  font-size: 1em;
   background-color: #4CAF50;
   color: white;
   border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
   border-radius: 5px;
-  transition: 0.3s ease;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
-button:hover {
+.purchase-container button:hover {
   background-color: #45a049;
 }
 
-#selectedTime {
-  margin-top: 15px;
-  font-size: 16px;
-  color: #555;
-  font-weight: bold;
+/* Styling for the time range input fields */
+#startTime,
+#endTime {
+  width: 120px;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 10px;
 }
 
-.message-area {
+/* Styling for the selected time message */
+#selectedTime {
   margin-top: 20px;
+  font-size: 1.2em;
+  color: #333;
+}
+
+/* PayPal Button Container */
+#paypal-button-container {
+  margin-top: 20px;
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
 }
 
-.message-box {
-  margin: 5px;
-  padding: 10px;
-  background-color: #f4f4f4;
-  border-radius: 5px;
-  max-width: 100px;
-  text-align: center;
-  position: relative;
+/* Styling for the clickable time divisions */
+#clock .time-division {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.message-box img {
-  width: 100%;
-  height: auto;
-  max-height: 60px;
-  object-fit: cover;
-  margin-bottom: 5px;
+#clock .time-division:hover {
+  background-color: rgba(0, 150, 0, 0.3);
 }
 
-.message-box p {
-  font-size: 14px;
-  color: #333;
-  overflow-wrap: break-word;
-  margin: 0;
+#clock .time-division.selected {
+  background-color: rgba(0, 150, 0, 0.6);
 }
 
-/* PayPal Button Styling */
-#paypal-button-container {
-  margin-top: 30px;
-  display: inline-block;
-  padding: 10px;
-}
+/* Media query for responsiveness on smaller screens */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
 
-#paypal-button-container button {
-  background-color: #ffb22f;
-  color: #333;
-  border-radius: 5px;
-  padding: 12px 30px;
-  font-size: 18px;
-}
+  h1 {
+    font-size: 2em;
+  }
 
-#paypal-button-container button:hover {
-  background-color: #ff9f00;
+  .purchase-container h2 {
+    font-size: 1.2em;
+  }
+
+  .purchase-container label {
+    font-size: 0.9em;
+  }
 }
