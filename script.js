@@ -1,72 +1,64 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2761
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww29200\viewh18380\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+// Clock Code
+const canvas = document.getElementById('clock');
+const ctx = canvas.getContext('2d');
 
-\f0\fs24 \cf0 // JavaScript for clock animation and PayPal button\
-let canvas = document.getElementById('clock');\
-let ctx = canvas.getContext('2d');\
-\
-// Draw the clock every second\
-function drawClock() \{\
-  let now = new Date();\
-  let hours = now.getHours();\
-  let minutes = now.getMinutes();\
-  let seconds = now.getSeconds();\
-  \
-  // Clear canvas\
-  ctx.clearRect(0, 0, canvas.width, canvas.height);\
-  \
-  // Draw clock circle\
-  ctx.beginPath();\
-  ctx.arc(250, 250, 200, 0, Math.PI * 2);\
-  ctx.strokeStyle = '#000';\
-  ctx.lineWidth = 5;\
-  ctx.stroke();\
-  \
-  // Draw hands\
-  let hourAngle = (hours % 12 + minutes / 60) * 30;\
-  let minuteAngle = (minutes + seconds / 60) * 6;\
-  let secondAngle = seconds * 6;\
-\
-  ctx.lineWidth = 8;\
-  ctx.beginPath();\
-  ctx.moveTo(250, 250);\
-  ctx.lineTo(250 + 100 * Math.cos(Math.PI / 2 - Math.PI * hourAngle / 180), 250 - 100 * Math.sin(Math.PI / 2 - Math.PI * hourAngle / 180));\
-  ctx.stroke();\
-\
-  ctx.lineWidth = 5;\
-  ctx.beginPath();\
-  ctx.moveTo(250, 250);\
-  ctx.lineTo(250 + 150 * Math.cos(Math.PI / 2 - Math.PI * minuteAngle / 180), 250 - 150 * Math.sin(Math.PI / 2 - Math.PI * minuteAngle / 180));\
-  ctx.stroke();\
-\
-  ctx.lineWidth = 2;\
-  ctx.beginPath();\
-  ctx.moveTo(250, 250);\
-  ctx.lineTo(250 + 180 * Math.cos(Math.PI / 2 - Math.PI * secondAngle / 180), 250 - 180 * Math.sin(Math.PI / 2 - Math.PI * secondAngle / 180));\
-  ctx.stroke();\
-\}\
-\
-setInterval(drawClock, 1000);\
-\
-// PayPal Button Integration\
-paypal.Buttons(\{\
-  createOrder: function(data, actions) \{\
-    return actions.order.create(\{\
-      purchase_units: [\{\
-        amount: \{\
-          value: '1.00' // Price for each second (1 dollar per second)\
-        \}\
-      \}]\
-    \});\
-  \},\
-  onApprove: function(data, actions) \{\
-    return actions.order.capture().then(function(details) \{\
-      alert('Transaction completed by ' + details.payer.name.given_name);\
-    \});\
-  \}\
-\}).render('#paypal-button-container');\
+function drawClock() {
+  const now = new Date();
+  const radius = canvas.height / 2;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.translate(radius, radius);
+  ctx.rotate(-Math.PI / 2);
+
+  ctx.beginPath();
+  ctx.arc(0, 0, radius - 10, 0, Math.PI * 2);
+  ctx.strokeStyle = 'black';
+  ctx.lineWidth = 10;
+  ctx.stroke();
+  ctx.closePath();
+
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const second = now.getSeconds();
+
+  drawHand((hour % 12) * 30 + (minute / 2), radius - 40, 8); // Hour hand
+  drawHand(minute * 6, radius - 20, 6); // Minute hand
+  drawHand(second * 6, radius - 10, 4); // Second hand
+
+  ctx.translate(-radius, -radius);
+  setTimeout(drawClock, 1000);
 }
+
+function drawHand(degrees, length, width) {
+  const radian = (Math.PI / 180) * degrees;
+  const x = Math.cos(radian) * length;
+  const y = Math.sin(radian) * length;
+
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(x, y);
+  ctx.lineWidth = width;
+  ctx.strokeStyle = '#333';
+  ctx.stroke();
+  ctx.closePath();
+}
+
+drawClock();
+
+// PayPal Button Script
+paypal.Buttons({
+  createOrder: function(data, actions) {
+    return actions.order.create({
+      purchase_units: [{
+        amount: {
+          value: '1.00'
+        }
+      }]
+    });
+  },
+  onApprove: function(data, actions) {
+    return actions.order.capture().then(function(details) {
+      alert('Transaction completed by ' + details.payer.name.given_name);
+    });
+  }
+}).render('#paypal-button-container');
