@@ -21,6 +21,21 @@
       <input type="text" id="secondInput" placeholder="e.g., 12:00:01">
       <button id="buySecondButton">Buy Second for $1</button>
       <p id="message"></p>
+
+      <!-- PayPal Form with Quantity Input -->
+      <h3>Purchase Your Time</h3>
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" value="Y7B2TSBMXEPJW" />
+        <input type="hidden" name="currency_code" value="USD" />
+
+        <!-- Quantity Input -->
+        <label for="quantity">Enter Quantity:</label>
+        <input type="number" name="quantity" id="quantity" value="1" min="1" />
+
+        <!-- PayPal Buy Now Button -->
+        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Buy Now" />
+      </form>
     </div>
 
     <!-- Random Message Section -->
