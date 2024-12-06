@@ -7,7 +7,7 @@ const purchasedSeconds = {};
 
 // Fetch Purchased Seconds from Backend
 function fetchPurchasedSeconds() {
-  fetch("http://localhost:3000/purchasedSeconds")
+  fetch("http://localhost:3000/purchasedSeconds")  // Make sure this URL is correct
     .then((response) => response.json())
     .then((data) => {
       Object.assign(purchasedSeconds, data); // Merge purchased seconds data into our state
@@ -97,7 +97,7 @@ document.getElementById("buySecondButton").addEventListener("click", () => {
     return;
   }
 
-  // Send data to server
+  // Send data to server (backend)
   fetch("http://localhost:3000/purchaseSecond", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -110,7 +110,8 @@ document.getElementById("buySecondButton").addEventListener("click", () => {
       drawClock(); // Redraw the clock
     })
     .catch((error) => {
-      messageBox.textContent = error.message;
+      messageBox.textContent = "Failed to make the purchase. Please try again.";
+      console.error("Error during purchase:", error);
     });
 });
 
