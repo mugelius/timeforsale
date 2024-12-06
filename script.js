@@ -7,7 +7,7 @@ const purchasedSeconds = {};
 
 // Fetch Purchased Seconds from Backend
 function fetchPurchasedSeconds() {
-  fetch("http://localhost:3000/purchasedSeconds")  // Make sure this URL is correct
+  fetch("https://clockproject-backend.onrender.com/purchasedSeconds")
     .then((response) => response.json())
     .then((data) => {
       Object.assign(purchasedSeconds, data); // Merge purchased seconds data into our state
@@ -97,8 +97,8 @@ document.getElementById("buySecondButton").addEventListener("click", () => {
     return;
   }
 
-  // Send data to server (backend)
-  fetch("http://localhost:3000/purchaseSecond", {
+  // Send data to server
+  fetch("https://clockproject-backend.onrender.com/purchaseSecond", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ time: input, message: userMessage }),
